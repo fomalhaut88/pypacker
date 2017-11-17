@@ -11,7 +11,7 @@ pyinstaller %(name)s.spec --log-level WARN
 
 echo Creating setup exe...
 POWERSHELL -COMMAND "(GC windows\%(name)s-setup.iss) -REPLACE '#define MyAppVersion \"1.0\"', '#define MyAppVersion \"%%version%%\"' | OUT-FILE dist\%(name)s-setup.iss -Encoding ASCII"
-ISCC windows\%(name)s-setup.iss
+ISCC dist\%(name)s-setup.iss
 DEL dist\%(name)s-setup.iss
 
 echo Completed.
