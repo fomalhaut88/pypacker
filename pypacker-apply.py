@@ -1,0 +1,2 @@
+import pypacker
+pypacker.main()

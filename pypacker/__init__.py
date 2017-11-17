@@ -1,8 +1,19 @@
 import os
+import platform
 import shutil
 
 
-BASE_DIR = os.path.dirname(__file__)
+py_version = platform.python_version()
+if py_version[0] != '3':
+    print("Unsupported python version:", py_version)
+    exit()
+
+
+TEMPLATES_DIR = os.path.normpath(os.path.join(
+    os.path.dirname(__file__),
+    '..',
+    'templates'
+))
 
 
 def input_not_empty(prompt):
@@ -20,7 +31,7 @@ def input_file(prompt):
 
 
 def get_template(name):
-    path = os.path.join(BASE_DIR, 'templates', name)
+    path = os.path.join(TEMPLATES_DIR, name)
     with open(path) as f:
         return f.read()
 
@@ -144,7 +155,7 @@ def create_ubuntu64_build(params):
     )
 
 
-if __name__ == "__main__":
+def main():
     print("Welcome to pypacker.")
     print("Below it will help you to prepare your project for building for different platforms.")
 
