@@ -1,6 +1,8 @@
 import os
 import platform
 import shutil
+import getpass
+from uuid import uuid4
 
 
 py_version = platform.python_version()
@@ -16,10 +18,14 @@ TEMPLATES_DIR = os.path.normpath(os.path.join(
 ))
 
 
-def input_not_empty(prompt):
+def input_not_empty(prompt, default=None):
+    if default is not None:
+        prompt += "[{}] ".format(default)
     value = ''
     while not value:
         value = input(prompt).strip()
+        if not value:
+            value = default
     return value
 
 
@@ -46,11 +52,11 @@ def create_by_template(tpl_name, params, file_path):
 def enter_params():
     params = {}
     params['name'] = input_not_empty("Enter the name of program: ")
-    params['author'] = input_not_empty("Enter author or publicher: ")
-    params['url'] = input_not_empty("Enter URL: ")
-    params['email'] = input_not_empty("Enter Email: ")
+    params['author'] = input_not_empty("Enter author or publicher: ", default=getpass.getuser())
+    params['url'] = input("Enter URL: ")
+    params['email'] = input("Enter Email: ")
     params['description'] = input_not_empty("Enter short description: ")
-    params['version'] = input_not_empty("Enter version: ")
+    params['version'] = input_not_empty("Enter version: ", default='1.0')
     return params
 
 
@@ -66,13 +72,13 @@ def choose_main(params):
 
 
 def add_version(params):
-    print("Adding version file ...")
+    print("Adding version file...")
     with open('version', 'w') as f:
         f.write(params['version'])
 
 
 def list_platforms(params):
-    platforms_str = input_not_empty("List platforms separated by comma (example: windows64,ubuntu64): ")
+    platforms_str = input_not_empty("List platforms separated by comma (example: windows64,ubuntu64): ", default='windows64,ubuntu64')
     params['platforms'] = [
         item.strip().lower()
         for item in platforms_str.split(',')
@@ -92,6 +98,7 @@ def create_spec(params):
 
 
 def create_iss(params):
+    app_id = str(uuid4()).upper()
     create_by_template(
         'windows-iss.tpl',
         {
@@ -101,6 +108,7 @@ def create_iss(params):
             'version': params['version'],
             'url': params['url'],
             'author': params['author'],
+            'app_id': app_id,
         },
         'windows/{}-setup.iss'.format(params['name'])
     )
